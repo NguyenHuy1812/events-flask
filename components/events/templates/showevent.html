@@ -1,0 +1,172 @@
+{%extends "bootstrap/speaker-details.html"%}
+{%import "bootstrap/wtf.html" as wtf%}
+{%block profile%}
+<h2>Event information</h2>
+<p>Welcome to the Event : {{event.eventname}}</p>
+</div>
+<div class="card" style="width: 70rem;">
+    <img src="{{event.image_url}}" alt="Speaker 1"
+    style = "width: 70rem;
+    height: 40vw;">
+    <div class="card-body">
+            <div class="details">
+                    <h2>Event name : {{event.eventname}}</h2>
+                    <h3>Event title : {{event.title}}</h3>
+                    <h3>Time: {{event.time_start}} to {{event.time_end}} </h3>
+                    <h3>Created_by : <a href="/users/{{event.owner.id}}">{{event.owner.username}}</a></h3>
+                    <h3> Rating:{{rate_number}} </h3>
+                    <h3>Rated by :
+                        {%for u in rate_list1 %}
+                        {{u.whorated}}
+                        {%endfor%}
+                      </h3>
+                    <div class="social">
+                        <a href=""><i class="fa fa-twitter"></i></a>
+                        <a href=""><i class="fa fa-facebook"></i></a>
+                        <a href=""><i class="fa fa-google-plus"></i></a>
+                        <a href=""><i class="fa fa-linkedin"></i></a>
+                    </div>
+                    <p>Content</p>
+                    <p> {{event.body}}</p>
+                    {%if current_user.id == event.owner.id %}
+                    <nav id="nav-menu-container">
+                        <ul class="nav-menu">
+                            <form method = 'POST' action = "{{url_for('events.delete',current_event_id=event.id)}}">
+                                    <button type="submit" class="btn" >Delete</button>
+                            </form>
+                            <form methods = 'POST' action = "{{url_for('events.edit',current_event_id=event.id,current_user_id = current_user.id )}}">
+                                    <button type="submit" class="btn" >Edit</button>
+                            </form>
+           
+                        </ul>           
+                        {%else%}
+                        <form method = 'POST'>
+                            {{ form.hidden_tag() }}
+                            {{ wtf.quick_form(form) }}
+                          </form>
+                        {%endif%}
+                    
+                    </nav>
+                </div>
+    </div>
+</div>
+
+<section id="buy-tickets" class="section-with-bg wow fadeInUp">
+    <div class="container">
+        <div class="section-header">
+            <h2>Buy Tickets</h2>
+            <p>Choose one option ticket below</p>
+        </div>
+        <div class="row">
+            <div class="col-lg-4">
+                <div class="card mb-5 mb-lg-0">
+                    <div class="card-body">
+                        <h5 class="card-title text-muted text-uppercase text-center">Standard Access</h5>
+                        <h6 class="card-price text-center">$150</h6>
+                        <hr>
+                        <ul class="fa-ul">
+                            <li><span class="fa-li"><i class="fa fa-check"></i></span>Regular Seating</li>
+                            <li><span class="fa-li"><i class="fa fa-check"></i></span>Coffee Break</li>
+                            <li><span class="fa-li"><i class="fa fa-check"></i></span>Custom Badge</li>
+                            <li class="text-muted"><span class="fa-li"><i class="fa fa-times"></i></span>Community
+                                Access</li>
+                            <li class="text-muted"><span class="fa-li"><i class="fa fa-times"></i></span>Workshop Access
+                            </li>
+                            <li class="text-muted"><span class="fa-li"><i class="fa fa-times"></i></span>After Party
+                            </li>
+                        </ul>
+                        <hr>
+                        <div class="text-center">
+                            <button type="submit" class="btn" data-toggle="modal" data-target="#buy-ticket-modal"
+                            data-ticket-type="standard-access">Buy Now</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="card mb-5 mb-lg-0">
+                    <div class="card-body">
+                        <h5 class="card-title text-muted text-uppercase text-center">Pro Access</h5>
+                        <h6 class="card-price text-center">$250</h6>
+                        <hr>
+                        <ul class="fa-ul">
+                            <li><span class="fa-li"><i class="fa fa-check"></i></span>Regular Seating</li>
+                            <li><span class="fa-li"><i class="fa fa-check"></i></span>Coffee Break</li>
+                            <li><span class="fa-li"><i class="fa fa-check"></i></span>Custom Badge</li>
+                            <li><span class="fa-li"><i class="fa fa-check"></i></span>Community Access</li>
+                            <li class="text-muted"><span class="fa-li"><i class="fa fa-times"></i></span>Workshop Access
+                            </li>
+                            <li class="text-muted"><span class="fa-li"><i class="fa fa-times"></i></span>After Party
+                            </li>
+                        </ul>
+                        <hr>
+                        <div class="text-center">
+                            <button type="button" class="btn" data-toggle="modal" data-target="#buy-ticket-modal"
+                                data-ticket-type="pro-access">Buy Now</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Pro Tier -->
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title text-muted text-uppercase text-center">Premium Access</h5>
+                        <h6 class="card-price text-center">$350</h6>
+                        <hr>
+                        <ul class="fa-ul">
+                            <li><span class="fa-li"><i class="fa fa-check"></i></span>Regular Seating</li>
+                            <li><span class="fa-li"><i class="fa fa-check"></i></span>Coffee Break</li>
+                            <li><span class="fa-li"><i class="fa fa-check"></i></span>Custom Badge</li>
+                            <li><span class="fa-li"><i class="fa fa-check"></i></span>Community Access</li>
+                            <li><span class="fa-li"><i class="fa fa-check"></i></span>Workshop Access</li>
+                            <li><span class="fa-li"><i class="fa fa-check"></i></span>After Party</li>
+                        </ul>
+                        <hr>
+                        <div class="text-center">
+                            <button type="button" class="btn" data-toggle="modal" data-target="#buy-ticket-modal"
+                                data-ticket-type="premium-access">Buy Now</button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Modal Order Form -->
+    <div id="buy-ticket-modal" class="modal fade">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Buy Tickets</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form method="POST" action = "{{ url_for('events.buy_ticket', current_event_id = event.id)}}">
+                        <div class="form-group">
+                            <select id="ticket-type" name="ticket-type" class="form-control">
+                                <option value="">-- Select Your Ticket Type --</option>
+                                <option  value="Standard">Standard Access</option>
+                                <option  value="Pro">Pro Access</option>
+                                <option  value="Premium">Premium Access</option>
+                            </select> 
+                        </div>
+                        <div class="form-group">
+                            <input id="ticket-type" class="form-control" name ='quantity' placeholder="quantity"/>
+                        </div>
+                        <div class="text-center">
+                            <button type="submit" class="btn">Buy Now</button>
+                        </div>
+                    </form>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
+
+</section>
+
+{%endblock profile %}

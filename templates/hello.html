@@ -1,0 +1,11 @@
+{%extends 'speaker-details.html'%}
+
+{%block signup %}
+<form methods = 'POST'>
+{{form.hidden_tag()}}
+{{form.username.label}}{{form.username}}
+{{form.password.label}}{{form.password}}
+{{form.email.label}}{{form.email}}
+{{form.submit}}
+{%endblock signup %}
+</form>
