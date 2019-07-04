@@ -23,9 +23,18 @@ POSTGRES = {
     'host': 'localhost',
     'port': 5432,
 }
+# POSTGRES = {
+#     'user': 'sql12297586',
+#     'pw': 'xsCLC9SaLP',
+#     'db': 'sql12297586',
+#     'host': 'sql12.freemysqlhosting.net',
+#     'port': 3306,
+# }
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://%(user)s:%(pw)s@%(host)s:\
 %(port)s/%(db)s' % POSTGRES
+
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://sql12297586:xsCLC9SaLP@sql12.freemysqlhosting.net/sql12297586'
 app.config["SECRET_KEY"] = '_5#y2L"F4Q8z\n\xec]/'
 
 
