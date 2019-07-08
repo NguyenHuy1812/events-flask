@@ -123,30 +123,26 @@
     <!--==========================
       About Section
     ============================-->
-    <!-- <section id="about">
+    <section id="about">
       <div class="container">
         <div class="row">
           <div class="col-lg-6">
-            <h2>About The Event</h2>
+            <h2>About The Coderschool</h2>
             {% block post %}
-            {{current_user.id}}
-            {{current_user.name}}
             {% endblock post %}
-            <p>Sed nam ut dolor qui repellendus iusto odit. Possimus inventore eveniet accusamus error amet eius aut
-              accusantium et. Non odit consequatur repudiandae sequi ea odio molestiae. Enim possimus sunt inventore in
-              est ut optio sequi unde.</p>
+            <p>CoderSchool is an organization that drives frontier technologies in Vietnam through education. We provide coding courses, mentorship and job placement for our students and alumni.</p>
           </div>
           <div class="col-lg-3">
             <h3>Where</h3>
-            <p>Downtown Conference Center, New York</p>
+            <p>Copac Square, 12 Duong Ton Dan, Phuong 13, Quan 4, Thanh Pho Ho Chi Minh</p>
           </div>
           <div class="col-lg-3">
             <h3>When</h3>
-            <p>Monday to Wednesday<br>10-12 December</p>
+            <p>Monday to Friday<br></p>
           </div>
         </div>
       </div>
-    </section> -->
+    </section>
 
     <!--==========================
       Other events Section
@@ -154,7 +150,7 @@
     <section id="speakers" class="wow fadeInUp">
       <div class="container">
         <div class="section-header">
-          <h2>Others Events</h2>
+          <h2>Our Events</h2>
           <p>Here are popular events</p>
         </div>
 
@@ -169,10 +165,8 @@
                 <h3><a href="/events/{{na.id}}"> Event name:   {{na.eventname}}   </a></h3>
                 <h4 style="color: red">{{na.title}}</h4>
                 <div class="social">
-                  <a href=""><i class="fa fa-twitter"></i></a>
-                  <a href=""><i class="fa fa-facebook"></i></a>
-                  <a href=""><i class="fa fa-google-plus"></i></a>
-                  <a href=""><i class="fa fa-linkedin"></i></a>
+                  <a href="">Start:{{na.time_start}}</i></a>
+                  <a href="">To : {{na.time_end}}</i></a>
                 </div>
               </div>
             </div>
@@ -201,18 +195,14 @@
 
         <div class="row no-gutters">
           <div class="col-lg-6 venue-map">
-            <iframe
-              src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d12097.433213460943!2d-74.0062269!3d40.7101282!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0xb89d1fe6bc499443!2sDowntown+Conference+Center!5e0!3m2!1smk!2sbg!4v1539943755621"
-              frameborder="0" style="border:0" allowfullscreen></iframe>
+              <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.6367446533573!2d106.70533511479337!3d10.762453792331025!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752f693a5128df%3A0x76966b260234240b!2zQ29wYWMgU3F1YXJlLCAxMiDEkMaw4budbmcgVMO0biDEkOG6o24sIFBoxrDhu51uZyAxMywgUXXhuq1uIDQsIEjhu5MgQ2jDrSBNaW5oLCBWaWV0bmFt!5e0!3m2!1sen!2s!4v1562294364320!5m2!1sen!2s" width="600" height="450" frameborder="0" style="border:0" allowfullscreen></iframe>
           </div>
 
           <div class="col-lg-6 venue-info">
             <div class="row justify-content-center">
               <div class="col-11 col-lg-8">
-                <h3>Downtown Conference Center, New York</h3>
-                <p>Iste nobis eum sapiente sunt enim dolores labore accusantium autem. Cumque beatae ipsam. Est quae sit
-                  qui voluptatem corporis velit. Qui maxime accusamus possimus. Consequatur sequi et ea suscipit enim
-                  nesciunt quia velit.</p>
+                <h3>Copac Square, 12 Duong Ton Dan, Phuong 13, Quan 4, Thanh Pho Ho Chi Minh</h3>
+                <p>CoderSchool is an organization that drives frontier technologies in Vietnam through education. We provide coding courses, mentorship and job placement for our students and alumni.</p>
               </div>
             </div>
           </div>
@@ -299,7 +289,7 @@
         <div class="container">
             <div class="section-header">
                 <h2>Hotels</h2>
-                <p>Her are some nearby hotels</p>
+                <p>There are some nearby hotels</p>
             </div>
     
             <div class="row">
@@ -460,7 +450,7 @@
     <!--==========================
       F.A.Q Section
     ============================-->
-    <section id="faq" class="wow fadeInUp">
+    <!-- <section id="faq" class="wow fadeInUp">
 
       <div class="container">
 
@@ -551,7 +541,7 @@
 
       </div>
 
-    </section>
+    </section> -->
 
     <!--==========================
       Subscribe Section
@@ -560,7 +550,7 @@
       <div class="container wow fadeInUp">
         <div class="section-header">
           <h2>Newsletter</h2>
-          <p>Rerum numquam illum recusandae quia mollitia consequatur.</p>
+          <p>Sign up to recỉeve Newsletter from our intersted Events</p>
         </div>
 
         <form method="POST" action="#">
@@ -591,7 +581,7 @@
 
         <div class="section-header">
           <h2>Contact Us</h2>
-          <p>Nihil officia ut sint molestiae tenetur.</p>
+          <p>Contact us via below:</p>
         </div>
 
         <div class="row contact-info">
@@ -600,7 +590,7 @@
             <div class="contact-address">
               <i class="ion-ios-location-outline"></i>
               <h3>Address</h3>
-              <address>A108 Adam Street, NY 535022, USA</address>
+              <address>Copac Square, 12 Duong Ton Dan, Phuong 13, Quan 4, Thanh Pho Ho Chi Minh</address>
             </div>
           </div>
 
@@ -608,7 +598,7 @@
             <div class="contact-phone">
               <i class="ion-ios-telephone-outline"></i>
               <h3>Phone Number</h3>
-              <p><a href="tel:+155895548855">+1 5589 55488 55</a></p>
+              <p><a href="tel:+155895548855">0394 511 721</a></p>
             </div>
           </div>
 
@@ -616,7 +606,7 @@
             <div class="contact-email">
               <i class="ion-ios-email-outline"></i>
               <h3>Email</h3>
-              <p><a href="mailto:info@example.com">info@example.com</a></p>
+              <p><a href="mailto:info@example.com">apply@coderschool.vn</a></p>
             </div>
           </div>
 
@@ -668,9 +658,7 @@
 
           <div class="col-lg-3 col-md-6 footer-info">
             <img src="/static/img/logo.png" alt="TheEvenet">
-            <p>In alias aperiam. Placeat tempore facere. Officiis voluptate ipsam vel eveniet est dolor et totam porro.
-              Perspiciatis ad omnis fugit molestiae recusandae possimus. Aut consectetur id quis. In inventore
-              consequatur ad voluptate cupiditate debitis accusamus repellat cumque.</p>
+            <p>CoderSchool is an organization that drives frontier technologies in Vietnam through education. We provide coding courses, mentorship and job placement for our students and alumni.</p>
           </div>
 
           <div class="col-lg-3 col-md-6 footer-links">
@@ -685,24 +673,24 @@
           </div>
 
           <div class="col-lg-3 col-md-6 footer-links">
-            <h4>Useful Links</h4>
+            <!-- <h4>Useful Links</h4>
             <ul>
               <li><i class="fa fa-angle-right"></i> <a href="#">Home</a></li>
               <li><i class="fa fa-angle-right"></i> <a href="#">About us</a></li>
               <li><i class="fa fa-angle-right"></i> <a href="#">Services</a></li>
               <li><i class="fa fa-angle-right"></i> <a href="#">Terms of service</a></li>
               <li><i class="fa fa-angle-right"></i> <a href="#">Privacy policy</a></li>
-            </ul>
+            </ul> -->
           </div>
 
           <div class="col-lg-3 col-md-6 footer-contact">
             <h4>Contact Us</h4>
             <p>
-              A108 Adam Street <br>
-              New York, NY 535022<br>
-              United States <br>
-              <strong>Phone:</strong> +1 5589 55488 55<br>
-              <strong>Email:</strong> info@example.com<br>
+               <br>
+               12 Ton Dan, District 4 <br>
+               Ho Chi Minh City <br>
+              <strong>Phone:</strong> 0394 511 721<br>
+              <strong>Email:</strong> apply@coderschool.vn<br>
             </p>
 
             <div class="social-links">
@@ -721,7 +709,7 @@
 
     <div class="container">
       <div class="copyright">
-        &copy; Copyright <strong>TheEvent</strong>. All Rights Reserved
+        &copy; Copyright <strong>CoderSchool 2019</strong>. All Rights Reserved
       </div>
       <div class="credits">
         <!--
@@ -730,7 +718,7 @@
           Licensing information: https://bootstrapmade.com/license/
           Purchase the pro version with working PHP/AJAX contact form: https://bootstrapmade.com/buy/?theme=TheEvent
         -->
-        Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
+
       </div>
     </div>
   </footer><!-- #footer -->

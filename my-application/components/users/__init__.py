@@ -2,11 +2,13 @@ from jinja2 import Template
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, session, url_for)
 from werkzeug.security import check_password_hash, generate_password_hash
-from components.users.forms.forms import SignupForm, SigninForm , RatingForm
-from models.ticketbox import User , db, login_manager  , RatingUser
+from components.users.forms.forms import SignupForm, SigninForm , RatingForm ,EditProfileForm
+from models.ticketbox import User , db, login_manager  , RatingUser , Ticket, ProfileUser
 from flask_login import login_user, login_required, LoginManager, UserMixin, logout_user, current_user
 from sqlalchemy.sql import func
 from sqlalchemy import and_
+
+
 #Define blueprint
 users_blueprint = Blueprint('users', __name__,
                         template_folder='templates')
@@ -23,7 +25,7 @@ def register_user():
         new_user.set_password(form.password.data)
         db.session.add(new_user)
         db.session.commit()
-        return render_template('signup.html',form = form)
+        return redirect(url_for('users.login'))
     return render_template('signup.html',form = form)
 @users_blueprint.route('/signin',methods=('GET', 'POST'))
 def login():
@@ -42,18 +44,30 @@ def login():
 
 @users_blueprint.route('/<user_id>', methods = ['POST', 'GET'])
 def profile(user_id):
+    cur_profile = ProfileUser.query.filter_by(user_id = user_id).first()
+    if cur_profile is None:
+        new_profile = ProfileUser(user_id = user_id)
+        db.session.add(new_profile)
+        db.session.commit()
+    else:
+        pass
     cur_user = User.query.filter_by(id = user_id).first()
     form = RatingForm()
     rate_list1 = RatingUser.query.filter_by(target_user_id = user_id)
     cur_rate_user = RatingUser.query.filter_by(target_user_id = user_id , rater_id = current_user.id).first()
+    validate_rate =  RatingUser.query.filter_by(target_user_id = user_id).first()
     result = RatingUser.query.with_entities(
              func.avg(RatingUser.rating).label("mySum")
          ).filter_by(target_user_id = user_id).first()
-    
-    if cur_rate_user is None:
+    if validate_rate is None:
         rate_number = 0
+    elif int(user_id) == int(validate_rate.target_user_id):
+        rate_number = round(result.mySum,2)
+    # elif cur_rate_event is None:
+    #     rate_number = float(result.mySum)
     else:
-        rate_number = float(result.mySum)
+        rate_number = 0
+
     if form.validate_on_submit():
         if  cur_rate_user is not None:
             cur_rate_user.rating = form.rating.data
@@ -66,6 +80,43 @@ def profile(user_id):
             return redirect(url_for('users.profile',user_id = user_id ))
     return render_template('profile.html', name = cur_user , form = form , rate_number =rate_number , 
                                         cur_rate_user =cur_rate_user, rate_list1=rate_list1)
+
+@users_blueprint.route('/<current_user_id>/editprofile', methods = ['POST', 'GET'])
+def editprofile(current_user_id):
+    update_user = ProfileUser.query.filter_by(user_id = current_user_id).first()
+    update_raw_user = User.query.filter_by(id = current_user_id).first()
+    form = EditProfileForm(
+        name = update_raw_user.name,
+        email = update_raw_user.email,
+        phone  = update_user.phone,
+        avatar = update_user.avatar_url,
+        address = update_user.address
+    )
+    if request.method == 'POST':
+        update_user.avatar_url = form.avatar.data
+        update_raw_user.name = form.name.data
+        update_raw_user.email = form.email.data
+        update_user.phone = form.phone.data
+        update_user.address = form.address.data
+        db.session.commit()
+        return redirect(url_for('something')) 
+    return render_template('edit-profile.html', form = form)
+
+
+
+@users_blueprint.route('/<user_id>/ticket/<ticket_id>', methods =['POST', 'GET'])
+def ticketinfor(user_id , ticket_id):
+    cur_user = User.query.filter_by(id = user_id).first()
+    cur_ticket = Ticket.query.filter_by(id = ticket_id).first()
+    if request.method == 'POST':
+        if cur_ticket.check_in_time == 0:
+            return "Out of checkin"
+        else:
+            cur_ticket.check_in_time = Ticket.check_in_time -1
+            db.session.commit()
+            return redirect(url_for('users.ticketinfor',user_id = user_id,ticket_id= ticket_id, name = cur_user , ticket = cur_ticket ))
+    return render_template('ticketinfor.html', name = cur_user , ticket = cur_ticket)
+
 
 
 @users_blueprint.route('/logout')

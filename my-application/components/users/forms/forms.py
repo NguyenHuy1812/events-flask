@@ -15,6 +15,17 @@ class SigninForm(FlaskForm):
     password = PasswordField("Password", validators=[DataRequired()])
     submit =SubmitField('Sign In')
 
+class EditProfileForm(FlaskForm):
+    # username = StringField('User name', validators=[DataRequired()])
+    name = StringField('Name', validators=[DataRequired()])
+    email =    StringField('Email', validators=[DataRequired()])
+    phone = StringField('Phone' )
+    avatar = StringField('Avatar')
+    address = StringField('Address')
+    submit = SubmitField('Change')
+
+
+
 class RatingForm(FlaskForm):
     ratings = [(0,0), (1, 1), 
                (2, 2),  (3, 3), 

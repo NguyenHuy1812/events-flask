@@ -7,11 +7,15 @@ from components.events import events_blueprint
 from models.ticketbox import db, login_manager,User,UserMixin ,RatingUser, Event
 from flask_bootstrap import Bootstrap
 from flask_login import login_user, login_required, LoginManager, UserMixin, logout_user, current_user
-
+from flask_qrcode import QRcode
+from sqlalchemy import desc
 app = Flask(__name__)
+migrate = Migrate(app, db, compare_type = True)
 bootstrap = Bootstrap(app)
+qrcode = QRcode(app)
 db.init_app(app)
-migrate = Migrate(app, db, compare_type = False)
+
+
 
 
 login_manager.init_app(app)
@@ -19,7 +23,7 @@ login_manager.init_app(app)
 POSTGRES = {
     'user': 'mac',
     'pw': None,
-    'db': 'ticket',
+    'db': 'newticket',
     'host': 'localhost',
     'port': 5432,
 }
@@ -46,7 +50,7 @@ app.config["SECRET_KEY"] = '_5#y2L"F4Q8z\n\xec]/'
 #Route to index page
 @app.route('/')
 def something():
-    event = Event.query.all()
+    event = Event.query.order_by(desc(Event.time_start))
     return render_template('index.html', name = event)
 #users components
 app.register_blueprint(users_blueprint, url_prefix='/users')
@@ -58,14 +62,14 @@ app.register_blueprint(users_blueprint, url_prefix='/users')
 
 @app.route('/hello')
 def hello():
-    # user_1 = User.query.filter_by(username = 'huy').first()
-    # print('hehehehe',user_1.username)
-    # user_2 = User.query.filter_by(username = 'huy04').first()
-    # print('hehehehe',user_2.username)
-    # rate = RatingUser(rating = 3)
-    # rate.target_user_id = user_1.id
-    # user_2.rater_id.append(rate)
-    # db.session.commit()
+    user_1 = User.query.filter_by(username = 'huy').first()
+    print('hehehehe',user_1.username)
+    user_2 = User.query.filter_by(username = 'huy04').first()
+    print('hehehehe',user_2.username)
+    rate = RatingUser(rating = 3)
+    rate.target_user_id = user_1.id
+    user_2.rater_id.append(rate)
+    db.session.commit()
     return render_template('hello.html')
 
 @app.route('/addevent')

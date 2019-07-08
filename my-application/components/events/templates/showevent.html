@@ -1,4 +1,4 @@
-{%extends "bootstrap/speaker-details.html"%}
+{%extends "bootstrap/event-details.html"%}
 {%import "bootstrap/wtf.html" as wtf%}
 {%block profile%}
 <h2>Event information</h2>
@@ -14,10 +14,19 @@
                     <h3>Event title : {{event.title}}</h3>
                     <h3>Time: {{event.time_start}} to {{event.time_end}} </h3>
                     <h3>Created_by : <a href="/users/{{event.owner.id}}">{{event.owner.username}}</a></h3>
-                    <h3> Rating:{{rate_number}} </h3>
+                    <h3>Rating:{{rate_number}} </h3>
+                    <h3>Number sold_ticket: {{count_ticket.myCount}}</h3>
+                    {%if current_user.id == event.owner.id %}
+                    <h3>Total sold: {{count_money.myMoney}}$ </h3>
+                    {%else%}
+                    {%endif%}
                     <h3>Rated by :
                         {%for u in rate_list1 %}
-                        {{u.whorated}}
+                        {%if u.whorated.username == current_user.username%}
+                        You ({{u.rating}})
+                        {%else%}
+                        {{u.whorated}}({{u.rating}})
+                        {%endif%}
                         {%endfor%}
                       </h3>
                     <div class="social">

@@ -13,13 +13,11 @@ class RatingUser(db.Model):
     target_user_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
     rating = db.Column(db.Integer)
 
-
-
-
 class ProfileUser(db.Model):
     __tablename__="profile"
     id = db.Column(db.Integer, primary_key = True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    avatar_url = db.Column(db.String(10000), default = 'https://pbs.twimg.com/profile_images/787106179482869760/CwwG2e2M_400x400.jpg')
     phone = db.Column(db.Integer)
     address = db.Column(db.String(255))
     created_at = db.Column(db.DateTime, server_default=db.func.now())
@@ -73,6 +71,8 @@ class Ticket(db.Model):
     buyer_id = db.Column(db.Integer, db.ForeignKey("users.id"))
     quantity = db.Column(db.Integer)
     totalbill = db.Column(db.Integer)
+    ticket_qrcode = db.Column(db.String(1000000), unique = True)
+    check_in_time = db.Column(db.Integer)
     
 
 

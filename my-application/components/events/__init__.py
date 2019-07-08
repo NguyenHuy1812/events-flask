@@ -5,6 +5,10 @@ from components.users import current_user
 from datetime import datetime
 from sqlalchemy.sql import func
 from sqlalchemy import and_
+from flask_qrcode import QRcode
+import random
+
+qrcode = QRcode()
 #Define blueprint
 events_blueprint = Blueprint('events', __name__,
                         template_folder='templates')
@@ -35,8 +39,8 @@ def edit(current_user_id,current_event_id):
         eventname = update_event.eventname,
         title = update_event.title,
         image_url = update_event.image_url,
-        time_start= datetime.strptime(update_event.time_start,'%Y-%m-%d%'),
-        time_end= datetime.strptime(update_event.time_end,'%Y-%m-%d%'),
+        # time_start= datetime.strptime(update_event.time_start,'%Y-%m-%d%'),
+        # time_end= datetime.strptime(update_event.time_end,'%Y-%m-%d%'),
         body= update_event.body,
     )
     cur_user = User.query.filter_by(id = current_user_id).first()
@@ -58,19 +62,27 @@ def edit(current_user_id,current_event_id):
 def show_event(current_event_id):
     form = RatingFormEvent()
     cur_event = Event.query.filter_by(id = current_event_id ).first()
+
     rate_list1 = RatingEvent.query.filter_by(rate_event = current_event_id)
     cur_rate_event = RatingEvent.query.filter_by(rate_event = current_event_id , rater_id = current_user.id).first()
-    validate_rate =  RatingEvent.query.filter_by(rate_event = current_event_id)
+    validate_rate =  RatingEvent.query.filter_by(rate_event = current_event_id).first()
     result = RatingEvent.query.with_entities(
              func.avg(RatingEvent.rating).label("mySum")
          ).filter_by(rate_event = current_event_id).first()
-    print(str(cur_rate_event))
+    count_ticket = Ticket.query.with_entities(
+             func.sum(Ticket.quantity).label("myCount")
+         ).filter_by(event_id = current_event_id).first()
+    count_money = Ticket.query.with_entities(
+             func.sum(Ticket.totalbill).label("myMoney")
+         ).filter_by(event_id = current_event_id).first()
     if validate_rate is None:
         rate_number = 0
-    elif cur_rate_event is None:
-        rate_number = 0
+    elif int(current_event_id) == int(validate_rate.rate_event):
+        rate_number = round(result.mySum,2)
+    # elif cur_rate_event is None:
+    #     rate_number = float(result.mySum)
     else:
-        rate_number = float(result.mySum)
+        rate_number = 0
     if form.validate_on_submit():
         if  cur_rate_event is not None:
             cur_rate_event.rating = form.rating.data
@@ -82,14 +94,22 @@ def show_event(current_event_id):
             db.session.commit()
             return redirect(url_for('events.show_event',current_event_id = current_event_id ))
     return render_template('showevent.html', event = cur_event, form = form,rate_number =rate_number , 
-                                        cur_rate_event =cur_rate_event, rate_list1=rate_list1)
+                                        cur_rate_event =cur_rate_event, rate_list1=rate_list1 , count_ticket = count_ticket, count_money =count_money)
 
 @events_blueprint.route('events/<current_event_id>/buyhere' , methods = ['POST', 'GET'])
 def buy_ticket(current_event_id):
     if request.method == 'POST':
         tic_type = Ticket_Type.query.filter_by(name = request.form['ticket-type']).first()
-        cur_ticket = Ticket(event_id = current_event_id , type_ticket = tic_type.id,buyer_id = current_user.id, quantity = request.form['quantity'], totalbill = (int(tic_type.price) * int(request.form['quantity']) ) )
+        cur_ticket = Ticket(event_id = current_event_id , 
+                            type_ticket = tic_type.id,
+                            buyer_id = current_user.id, 
+                            quantity = request.form['quantity'], 
+                            totalbill = (int(tic_type.price) * int(request.form['quantity']) ),
+                            ticket_qrcode = qrcode(str(current_event_id)+str(tic_type.id) + str(random.randint(1,101)) + str(current_user.id)+str(request.form['quantity'])+str(int(tic_type.price) * int(request.form['quantity']))),
+                            check_in_time = request.form['quantity']
+                            )
+
         db.session.add(cur_ticket)
         db.session.commit()
-        return redirect(url_for('something'))
+        return redirect(url_for('users.ticketinfor',user_id = current_user.id , ticket_id = cur_ticket.id))
 

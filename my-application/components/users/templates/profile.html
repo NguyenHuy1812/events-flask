@@ -1,15 +1,15 @@
-{%extends "bootstrap/speaker-details.html"%}
+{%extends "bootstrap/event-details.html"%}
 {%import "bootstrap/wtf.html" as wtf%}
 
 {%block profile%}
 <h2>Profile User</h2>
-<p>Welcome to the profile of : {{ name.username}}</p>
+<p>Welcome to the profile of : {{ name.username}} </p>
 </div>
 
 
 <div class="row"> 
 <div class="col-md-3">
-  <img src="https://avatars2.githubusercontent.com/u/28944972?s=460&v=4" alt="Speaker 1" class="img-fluid">
+  <img src="{{name.profiles[0].avatar_url}}" alt="Speaker 1" class="img-fluid">
 </div>
 
 <div class="col-md-9">
@@ -18,9 +18,20 @@
     <h3>Email :     {{name.email}}</h3>
     <h3>Rating : {{rate_number}}</h3>
     <h3>Rated by :
+      {%if current_user.username == name.username%}
       {%for u in rate_list1 %}
-      {{u.rater}}
+      {{u.rater}}({{u.rating}})
       {%endfor%}
+      {%else%}
+      {%for u in rate_list1 %}
+      {%if u.rater.username == current_user.username%}
+      You ({{u.rating}})
+      {%else%}
+      {{u.rater}}({{u.rating}})
+      {%endif%}
+      {%endfor%}
+      
+      {%endif%}
     </h3>
 
     <!-- <div>
@@ -44,7 +55,11 @@
   <nav id="nav-menu-container">
     <ul class="nav-menu">
         <li class="buy-tickets"><a href="/events/{{current_user.id}}/create">Create Event</a></li>
+        <li class="buy-tickets"><a href="/users/{{current_user.id}}/editprofile">Edit Profile</a></li>
     </ul>
+    <ul class="nav-menu">
+     
+  </ul>
   </nav>
       {%else%}
       <form method = 'POST'>
@@ -71,7 +86,7 @@
               <img src="{{ticket.sold_ticket.image_url}}" alt="Speaker 1" class="" style = "width: 20vw;
               height: 10vw;">
               <div class="details">
-                <h5><a href="/events/{{ticket.sold_ticket.id}}"> Event: {{ticket.sold_ticket.eventname}}</a></h5>
+                <h5><a href="/users/{{current_user.id}}/ticket/{{ticket.id}}"> Event: {{ticket.sold_ticket.eventname}}</a></h5>
                 <h5 style="color: red">Access-type : {{ticket.quantity}} x {{ticket.type.name}}</h5>
               </div>
             </div> 
