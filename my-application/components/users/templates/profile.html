@@ -83,7 +83,10 @@
     <div class="container">
      
       <div>
-          <h3>Your history bought</h3>
+          <div class="section-header">
+              <h2>Your history bought ticket</h2>
+              <p>List history bought ticket Event</p>
+            </div>
           <div class = 'row justify-content-between'>
       
          
@@ -111,18 +114,12 @@
         {%for na in name.events%}
         <div class="col-lg-6 col-md-6">
           <div class="speaker">
-            <img src="{{na.image_url}}" alt="Speaker 1" style = "width: 40vw;
-            height: 20vw;">
+              <a href="/events/{{na.id}}">
+            <img src="{{na.image_url}}" alt="Speaker 1" class ="img-fluid">
+            </a>
             <div class="details">
-              <h3><a href="/events/{{na.id}}">   {{na.eventname}}   </a></h3>
-              <p> {{na.title}}</p>
-              <div class="social">
-                <a href=""><i class="fa fa-twitter"></i></a>
-                <a href=""><i class="fa fa-facebook"></i></a>
-                <a href=""><i class="fa fa-google-plus"></i></a>
-                <a href=""><i class="fa fa-linkedin"></i></a>
+                <h3><a href="/events/{{na.id}}"> {{na.eventname}}  | Rating : {{na.rating}} </a></h3>
               </div>
-            </div>
           </div>
         </div>
         {%endfor%}
@@ -135,22 +132,25 @@
   </section>
   <section id="speakers" class="wow fadeInUp">
     <div class="container">
-     
       <div>
-          <h3>Your history sold_ticket</h3>
+        <div class="section-header">
+          <h2>Your history sold ticket</h2>
+          <p>List history sold ticket Event</p>
+        </div>
+          <h3></h3>
           <div class = 'row justify-content-between'>
-          {%for new in name.events%}
-          <ul>
-            <li>
-                <h3>Event: {{new.eventname}}</h3>
-                <h3>Total money: {{new.ticket_sold | sum(attribute='totalbill')}}</h3>
-                <h3>Total ticket: {{new.ticket_sold | sum(attribute='quantity')}}</h3>
+              <ol>
+              {%for new in name.events%}
+             <li>
+                <h4>Event: {{new.eventname}}</h4>
+                <h5>Total money: {{new.ticket_sold | sum(attribute='totalbill')}}</h5>
+                <h5>Total ticket: {{new.ticket_sold | sum(attribute='quantity')}}</h5>
                 <!-- {%for a in new.ticket_sold%}
                 <h3>bill: {{a.totalbill}}</h3>
                 {%endfor%} -->
-            </li>
-          </ul>
+            </li> 
           {%endfor%}
+        </ol>
         </div>
       </div>
       <div class="row">
@@ -163,29 +163,20 @@
   {%else%} 
   <section id="speakers" class="wow fadeInUp">
     <div class="container">
-     
-  
       <div class="section-header">
           <h2>Created Event</h2>
           <p>List Created Event Here</p>
         </div>
-      <div class="row">
-        
+      <div class="row"> 
         {%block renderevent1%}
         {%for na in name.events%}
         <div class="col-lg-6 col-md-6">
           <div class="speaker">
-            <img src="{{na.image_url}}" alt="Speaker 1" style = "width: 40vw;
-            height: 20vw;">
+            <a href="/events/{{na.id}}">
+              <img src="{{na.image_url}}" alt="Speaker 1" class ="img-fluid">
+            </a>
             <div class="details">
-              <h3><a href="/events/{{na.id}}">   {{na.eventname}}   </a></h3>
-              <p> {{na.title}}</p>
-              <div class="social">
-                <a href=""><i class="fa fa-twitter"></i></a>
-                <a href=""><i class="fa fa-facebook"></i></a>
-                <a href=""><i class="fa fa-google-plus"></i></a>
-                <a href=""><i class="fa fa-linkedin"></i></a>
-              </div>
+              <h3><a href="/events/{{na.id}}"> {{na.eventname}}  | Rating : {{na.rating}} </a></h3>
             </div>
           </div>
         </div>

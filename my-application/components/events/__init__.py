@@ -52,7 +52,7 @@ def edit(current_user_id,current_event_id):
         update_event.time_end = form.time_end.data
         update_event.body = form.body.data
         update_event.owner = cur_user
-        update_event.genre = form.genre.data
+        # update_event.genre = form.genre.data
         db.session.commit()
         return redirect(url_for('something')) 
 
@@ -61,43 +61,46 @@ def edit(current_user_id,current_event_id):
 
 @events_blueprint.route('/<current_event_id>', methods = ['POST', 'GET'])
 def show_event(current_event_id):
-    
-    form = RatingFormEvent()
-    cur_event = Event.query.filter_by(id = current_event_id ).first()
-    rate_list1 = RatingEvent.query.filter_by(rate_event = current_event_id)
-    cur_rate_event = RatingEvent.query.filter_by(rate_event = current_event_id , rater_id = current_user.id).first()
-    validate_rate =  RatingEvent.query.filter_by(rate_event = current_event_id).first()
-    result = RatingEvent.query.with_entities(
-             func.avg(RatingEvent.rating).label("mySum")
-         ).filter_by(rate_event = current_event_id).first()
-    count_ticket = Ticket.query.with_entities(
-             func.sum(Ticket.quantity).label("myCount")
-         ).filter_by(event_id = current_event_id).first()
-    count_money = Ticket.query.with_entities(
-             func.sum(Ticket.totalbill).label("myMoney")
-         ).filter_by(event_id = current_event_id).first()
-   
-    if validate_rate is None:
-        rate_number = 0
-    elif int(current_event_id) == int(validate_rate.rate_event):
-        rate_number = round(result.mySum,2)
-    # elif cur_rate_event is None:
-    #     rate_number = float(result.mySum)
+    if current_user.is_anonymous:
+        flash('Login please')
+        return redirect(url_for('users.login'))
     else:
-        rate_number = 0
-    cur_event.rating = rate_number
-    db.session.commit()
-    if form.validate_on_submit():
-        if  cur_rate_event is not None:
-            cur_rate_event.rating = form.rating.data
-            db.session.commit()
-            return redirect(url_for('events.show_event',current_event_id = current_event_id, rate_list1 = rate_list1 ))
+        form = RatingFormEvent()
+        cur_event = Event.query.filter_by(id = current_event_id ).first()
+        rate_list1 = RatingEvent.query.filter_by(rate_event = current_event_id)
+        cur_rate_event = RatingEvent.query.filter_by(rate_event = current_event_id , rater_id = current_user.id).first()
+        validate_rate =  RatingEvent.query.filter_by(rate_event = current_event_id).first()
+        result = RatingEvent.query.with_entities(
+                func.avg(RatingEvent.rating).label("mySum")
+            ).filter_by(rate_event = current_event_id).first()
+        count_ticket = Ticket.query.with_entities(
+                func.sum(Ticket.quantity).label("myCount")
+            ).filter_by(event_id = current_event_id).first()
+        count_money = Ticket.query.with_entities(
+                func.sum(Ticket.totalbill).label("myMoney")
+            ).filter_by(event_id = current_event_id).first()
+    
+        if validate_rate is None:
+            rate_number = 0
+        elif int(current_event_id) == int(validate_rate.rate_event):
+            rate_number = round(result.mySum,2)
+        # elif cur_rate_event is None:
+        #     rate_number = float(result.mySum)
         else:
-            new_rating = RatingEvent(rater_id = current_user.id , rate_event = current_event_id ,rating = form.rating.data )
-            db.session.add(new_rating)
-            db.session.commit()
-            return redirect(url_for('events.show_event',current_event_id = current_event_id ))
-    return render_template('showevent.html', event = cur_event, form = form,rate_number =rate_number , 
+            rate_number = 0
+        cur_event.rating = rate_number
+        db.session.commit()
+        if form.validate_on_submit():
+            if  cur_rate_event is not None:
+                cur_rate_event.rating = form.rating.data
+                db.session.commit()
+                return redirect(url_for('events.show_event',current_event_id = current_event_id, rate_list1 = rate_list1 ))
+            else:
+                new_rating = RatingEvent(rater_id = current_user.id , rate_event = current_event_id ,rating = form.rating.data )
+                db.session.add(new_rating)
+                db.session.commit()
+                return redirect(url_for('events.show_event',current_event_id = current_event_id ))
+        return render_template('showevent.html', event = cur_event, form = form,rate_number =rate_number , 
                                         cur_rate_event =cur_rate_event, rate_list1=rate_list1 , count_ticket = count_ticket, count_money =count_money)
 
 @events_blueprint.route('events/<current_event_id>/buyhere' , methods = ['POST', 'GET'])

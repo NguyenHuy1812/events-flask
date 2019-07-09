@@ -4,7 +4,7 @@ from flask_migrate import Migrate
 from datetime import datetime
 from components.users import users_blueprint
 from components.events import events_blueprint
-from models.ticketbox import db, login_manager,User,UserMixin ,RatingUser, Event
+from models.ticketbox import db, login_manager,User,UserMixin ,RatingUser, Event , Ticket_Type
 from flask_bootstrap import Bootstrap
 from flask_login import login_user, login_required, LoginManager, UserMixin, logout_user, current_user
 from flask_qrcode import QRcode
@@ -30,15 +30,22 @@ POSTGRES = {
     'port': 5432,
 }
 # POSTGRES = {
+#     'user': 'dfbzyqbjnerjsu',
+#     'pw': 'd4108368d57af5d4886c5ba9c17dd01f485ed714884655eae62781818bcf2b54',
+#     'db': 'd9ieui5voioptc',
+#     'host': 'ec2-174-129-227-205.compute-1.amazonaws.com',
+#     'port': 5432,
+# }
+# POSTGRES = {
 #     'user': 'sql12297586',
 #     'pw': 'xsCLC9SaLP',
 #     'db': 'sql12297586',
 #     'host': 'sql12.freemysqlhosting.net',
 #     'port': 3306,
 # }
-
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://%(user)s:%(pw)s@%(host)s:\
-%(port)s/%(db)s' % POSTGRES
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://%(user)s:%(pw)s@%(host)s:\
+# %(port)s/%(db)s' % POSTGRES
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://dfbzyqbjnerjsu:d4108368d57af5d4886c5ba9c17dd01f485ed714884655eae62781818bcf2b54@ec2-174-129-227-205.compute-1.amazonaws.com:5432/d9ieui5voioptc'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://sql12297586:xsCLC9SaLP@sql12.freemysqlhosting.net/sql12297586'
 app.config["SECRET_KEY"] = '_5#y2L"F4Q8z\n\xec]/'
@@ -59,7 +66,7 @@ scheduler.start()
 @app.route('/')
 def something():
     event = Event.query.filter_by(hide = 'no').order_by(desc(Event.time_start))
-    rating = Event.query.order_by(desc(Event.rating)).slice(0,4)
+    rating = Event.query.filter_by(hide = 'no').order_by(desc(Event.rating)).slice(0,4)
     return render_template('index.html', name = event ,rating = rating)
 #users components
 app.register_blueprint(users_blueprint, url_prefix='/users')
@@ -87,7 +94,16 @@ def events():
     db.session.add(user_1)
     db.session.commit()
     return render_template('speaker-details.html')
-
+@app.route('/addticket')
+def addtics():
+    ticket1 = Ticket_Type(price = 150 , name = 'Standard')
+    ticket2 = Ticket_Type(price = 250, name = 'Pro')
+    ticket3 = Ticket_Type(price = 350, name = 'Preminum')
+    db.session.add (ticket1)
+    db.session.add (ticket2)
+    db.session.add (ticket3)
+    db.session.commit()
+    return render_template('index.html')
 #events components
 app.register_blueprint(events_blueprint, url_prefix='/events')
 #Handle events/create

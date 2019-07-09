@@ -5,7 +5,13 @@
 <form method = 'POST'>
         
 {{ form.hidden_tag() }}
-
+{% with messages = get_flashed_messages() %}
+                        {%if messages %}
+                    <h3>
+                        {{ messages[0] }}
+                    </h3>
+                        {%endif%}
+                    {%endwith%}
 {{ wtf.quick_form(form) }}
 </form>    
 
