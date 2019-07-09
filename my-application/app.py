@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template, session, redirect, url_for, escape, request
+from flask import Flask, render_template, session, redirect, url_for, escape, request, current_app
 from flask_migrate import Migrate
 from datetime import datetime
 from components.users import users_blueprint
@@ -8,7 +8,9 @@ from models.ticketbox import db, login_manager,User,UserMixin ,RatingUser, Event
 from flask_bootstrap import Bootstrap
 from flask_login import login_user, login_required, LoginManager, UserMixin, logout_user, current_user
 from flask_qrcode import QRcode
-from sqlalchemy import desc
+from sqlalchemy import desc, asc
+from flask_apscheduler import APScheduler
+
 app = Flask(__name__)
 migrate = Migrate(app, db, compare_type = True)
 bootstrap = Bootstrap(app)
@@ -37,21 +39,28 @@ POSTGRES = {
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://%(user)s:%(pw)s@%(host)s:\
 %(port)s/%(db)s' % POSTGRES
-
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://sql12297586:xsCLC9SaLP@sql12.freemysqlhosting.net/sql12297586'
 app.config["SECRET_KEY"] = '_5#y2L"F4Q8z\n\xec]/'
 
+scheduler = APScheduler()
 
+scheduler.init_app(app)
 
+scheduler.start()
 
+# @scheduler.task("interval", id = 'job_1', seconds = 5)
+# def simple_funtion():
+#     print('hellooooooooo')
 
 
 
 #Route to index page
 @app.route('/')
 def something():
-    event = Event.query.order_by(desc(Event.time_start))
-    return render_template('index.html', name = event)
+    event = Event.query.filter_by(hide = 'no').order_by(desc(Event.time_start))
+    rating = Event.query.order_by(desc(Event.rating)).slice(0,4)
+    return render_template('index.html', name = event ,rating = rating)
 #users components
 app.register_blueprint(users_blueprint, url_prefix='/users')
 #Handle users/signup

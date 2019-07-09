@@ -1,12 +1,15 @@
 from jinja2 import Template
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, session, url_for)
+    Blueprint, flash, g, redirect, render_template, request, session, url_for , current_app)
 from werkzeug.security import check_password_hash, generate_password_hash
-from components.users.forms.forms import SignupForm, SigninForm , RatingForm ,EditProfileForm
-from models.ticketbox import User , db, login_manager  , RatingUser , Ticket, ProfileUser
+from components.users.forms.forms import SignupForm, SigninForm , RatingForm ,EditProfileForm,EmailResetForm , PasswordResetForm
+from models.ticketbox import User , db, login_manager  , RatingUser , Ticket, ProfileUser , Event
 from flask_login import login_user, login_required, LoginManager, UserMixin, logout_user, current_user
 from sqlalchemy.sql import func
 from sqlalchemy import and_
+from sqlalchemy import desc, asc
+from itsdangerous import  URLSafeTimedSerializer
+import requests
 
 
 #Define blueprint
@@ -34,9 +37,15 @@ def login():
         log_user = User.query.filter_by(
             username=form.username.data).first()
         if log_user is None:
-            return render_template('signin.html', form=form, error='wrong username')
+            error = "Wrong username"
+            form.username.errors.append(error)
+            return render_template('signin.html', form=form)
+            # flash("wrong user name")
+            
         if not log_user.check_password(form.password.data):
-            return render_template('signin.html', form=form, error='wrong password')
+            error = "Wrong password"
+            form.password.errors.append(error)
+            return render_template('signin.html', form=form)
         else:
             login_user(log_user)
             return redirect(url_for('something'))
@@ -44,6 +53,7 @@ def login():
 
 @users_blueprint.route('/<user_id>', methods = ['POST', 'GET'])
 def profile(user_id):
+   
     cur_profile = ProfileUser.query.filter_by(user_id = user_id).first()
     if cur_profile is None:
         new_profile = ProfileUser(user_id = user_id)
@@ -51,7 +61,7 @@ def profile(user_id):
         db.session.commit()
     else:
         pass
-    cur_user = User.query.filter_by(id = user_id).first()
+    cur_user = User.query.filter_by(id = user_id).first() 
     form = RatingForm()
     rate_list1 = RatingUser.query.filter_by(target_user_id = user_id)
     cur_rate_user = RatingUser.query.filter_by(target_user_id = user_id , rater_id = current_user.id).first()
@@ -67,7 +77,7 @@ def profile(user_id):
     #     rate_number = float(result.mySum)
     else:
         rate_number = 0
-
+    
     if form.validate_on_submit():
         if  cur_rate_user is not None:
             cur_rate_user.rating = form.rating.data
@@ -122,6 +132,58 @@ def ticketinfor(user_id , ticket_id):
 @users_blueprint.route('/logout')
 def logout():
     logout_user()
-    return render_template('index.html')
+    event = Event.query.order_by(desc(Event.time_start))
+    rating = Event.query.order_by(desc(Event.rating)).slice(0,4)
+    return render_template('index.html', event = event , rating = rating)
 
+MAILGUN_API_KEY = "835247908130ab70a5901fb6c751b9dc-afab6073-9c2883e4"
+MAILGUN_DOMAIN_NAME = "sandboxd30e9b056a6240d19e2b8cbacafe6718.mailgun.org"
+@users_blueprint.route('/reset', methods =['POST', 'GET'])
+def test_password():
+    form = EmailResetForm()
+    if form.validate_on_submit():
+        #VALIDATE EMAIL
+        try:
+            user = User.query.filter_by(email = form.email.data).first_or_404()
+        except:
+            flash("Invalid email address" , 'error')
+            return redirect(url_for("users.login"))
+        #CREATE TOKEN
+        ts = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
+        token = ts.dumps(form.email.data, salt='password_reset_salt')
+        title = "Reset Mail"
+        email = form.email.data
+        password_reset_url = url_for("users.reset_with_token", token = token, _external = True)
+        password_reset_url = render_template('email_password.html', password_reset_url = password_reset_url)
+        #SEND TOKEN TO THE EMAIL ADDRESS
+        send_mail(title, email, password_reset_url)
+    return render_template('reset.html', form = form)
 
+def send_mail(title, email, html):
+    url = "https://api.mailgun.net/v3/{}/messages".format(MAILGUN_DOMAIN_NAME)
+    auth = ('api', MAILGUN_API_KEY)
+    data = {
+        'from': f'Mailgun User <mailgun@{MAILGUN_DOMAIN_NAME}>',
+        'to': email,
+        'subject':title,
+        'text': 'Plaintext content',
+        'html': html
+    }
+    print('url', url)
+    response = requests.post(url, auth = auth, data = data)
+    response.raise_for_status()
+@users_blueprint.route("/reset_token/<token>", methods =['POST', 'GET'])
+def reset_with_token(token):
+    try:
+        ts = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
+        email = ts.loads(token, salt = 'password_reset_salt', max_age=3600)
+    except:
+        flash('Fail!!!!!!!!!!!!!!!!!!!!!!!!!!', 'warning')
+        return redirect(url_for('users.login'))
+    form = PasswordResetForm()
+    if form.validate_on_submit():
+        cur_user = User.query.filter_by(email = email).first()
+        cur_user.set_password(form.password.data)
+        db.session.commit()  
+        return redirect(url_for('users.login'))      
+    return render_template('resetpass.html', form = form)

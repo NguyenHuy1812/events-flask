@@ -1,0 +1,21 @@
+{%extends "bootstrap/event-details.html"%}
+{%import "bootstrap/wtf.html" as wtf%}
+{%block signup %}
+
+<div class="card" style="width: 40rem; height: 80vw;">
+        <img class="card-img-top" src="{{ticket.sold_ticket.image_url}}" alt="Card image cap" style="width:40rem; height: 20vw;">
+        <div class="card-body">
+          <h5 class="card-title">Event name: {{ticket.sold_ticket.eventname}}</h5>
+          <h5 class="card-title">{{ticket.quantity}} x {{ticket.type.name}} = {{ticket.totalbill}} $</h5>
+          <h5 class="card-title">Time start: {{ticket.sold_ticket.time_start}}</h5>
+          <h5 class="card-title">Time end: {{ticket.sold_ticket.time_end}}</h5>
+          <h5>Available check-in times: {{ticket.check_in_time}}</h5>
+          <form method = "POST">
+            <button class="btn" style = "background-color: red" type = "submit">Check-in</button>
+            <br>
+            </form>
+          <img src="{{ticket.ticket_qrcode}}">
+        </div>
+      </div>
+
+{%endblock signup %}

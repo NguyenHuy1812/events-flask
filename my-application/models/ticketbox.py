@@ -36,10 +36,14 @@ class Event(db.Model):
     title = db.Column(db.String(255), nullable=False, unique=True)
     time_start =db.Column(db.DateTime)
     time_end = db.Column(db.DateTime)
-    image_url = db.Column(db.String(1000))
-    body = db.Column(db.String(1000))
+    image_url = db.Column(db.String(10000))
+    body = db.Column(db.String(1000000))
     ticket_sold = db.relationship("Ticket",backref = "sold_ticket")
     user_rate_id = db.relationship("RatingEvent", backref = "event_rate")
+    rating = db.Column(db.Integer, default = 0)
+    hide = db.Column(db.String(10), default = 'no')
+    stock = db.Column(db.Integer, default = 0)
+    genre = db.relationship('GenreMovie', backref = 'event_genre')
     
 class User(UserMixin, db.Model):
     __tablename__='users'
@@ -75,6 +79,17 @@ class Ticket(db.Model):
     check_in_time = db.Column(db.Integer)
     
 
+class Genre(db.Model):
+    __tablename__="genre"
+    id = db.Column(db.Integer, primary_key = True)
+    genres = db.column(db.String(30))
+    gen_movie = db.relationship('GenreMovie', backref = 'genre_type')
+
+class GenreMovie(db.Model):
+    __tablename__="genremovie"
+    id = db.Column(db.Integer, primary_key = True)
+    movie_id = db.Column(db.Integer , db.ForeignKey("events.id"))
+    movie_genre = db.Column(db.Integer , db.ForeignKey("genre.id"))
 
 
 class Ticket_Type(db.Model):

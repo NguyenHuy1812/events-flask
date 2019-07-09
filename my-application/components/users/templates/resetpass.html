@@ -1,0 +1,9 @@
+{%extends "bootstrap/event-details.html"%}
+{%import "bootstrap/wtf.html" as wtf%}
+{%block signup %}
+{{email}}
+<form method = 'POST'>
+{{ form.hidden_tag() }}
+{{ wtf.quick_form(form) }}
+</form>    
+{%endblock signup %}

@@ -4,7 +4,7 @@
 
 <head>
   <meta charset="utf-8">
-  <title>TheEvent - Bootstrap Event Template</title>
+  <title>TheEvenest</title>
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
   <meta content="" name="keywords">
   <meta content="" name="description">
@@ -56,6 +56,7 @@
         <ul class="nav-menu">
           <li><a href="/users/signup">Signup</a></li>
           <li><a href="/users/signin">Signin</a></li>
+          <li><a href="/users/reset">Forgot Password</a></li>
         </ul>
       </nav><!-- #nav-menu-container -->
         {% else %}
@@ -86,24 +87,30 @@
   <section id="intro">
     <div id="carouselExampleCaptions" class="carousel slide  intro-container wow fadeIn" data-ride="carousel">
       <ol class="carousel-indicators">
-        <li data-target="#carouselExampleCaptions" data-slide-to="0" class="active"></li>
+        <li data-target="#carouselExampleCaptions" data-slide-to="0" ></li>
         <li data-target="#carouselExampleCaptions" data-slide-to="1"></li>
         <li data-target="#carouselExampleCaptions" data-slide-to="2"></li>
+        <li data-target="#carouselExampleCaptions" data-slide-to="3" class="active"></li>
       </ol>
       <div class="carousel-inner">
         <div class="carousel-item active">
-          <img src="https://tkbvn-tokyo.s3.amazonaws.com/Upload/eventcover/2019/07/01/501E5A.jpg"
-            class=" w-75 d-none d-md-block justify-content-center" style="margin-left: auto;
+          <img src="{{rating[0].image_url}}"
+            class=" w-75 h-25 d-none d-md-block justify-content-center" style="margin-left: auto;
               margin-right: auto" alt="...">
         </div>
         <div class="carousel-item">
-          <img src="https://tkbvn-tokyo.s3.amazonaws.com/Upload/eventcover/2019/06/25/109A59.jpg"
-            class=" w-75 d-none d-md-block justify-content-center" style="margin-left: auto;
+          <img src="{{rating[1].image_url}}"
+            class=" w-75 h-25 d-none d-md-block justify-content-center" style="margin-left: auto;
                 margin-right: auto" alt="...">
         </div>
         <div class="carousel-item">
-          <img src="https://tkbvn-tokyo.s3.amazonaws.com/Upload/eventcover/2019/06/17/ECF9C6.jpg"
-            class=" w-75 d-none d-md-block justify-content-center" style="margin-left: auto;
+          <img src="{{rating[2].image_url}}"
+            class=" w-75 h-25 d-none d-md-block justify-content-center" style="margin-left: auto;
+                margin-right: auto" alt="...">
+        </div>
+        <div class="carousel-item">
+          <img src="{{rating[3].image_url}}"
+            class=" w-75 h-25 d-none d-md-block justify-content-center" style="margin-left: auto;
                 margin-right: auto" alt="...">
         </div>
       </div>
@@ -150,6 +157,40 @@
     <section id="speakers" class="wow fadeInUp">
       <div class="container">
         <div class="section-header">
+          <h2>Most rating Events</h2>
+          <p>Here are most rating events</p>
+        </div>
+
+        <div class="row">
+          {%block renderating%}
+          {%for na in rating%}
+          <div class="col-lg-6 col-md-6">
+            <div class="speaker">
+              <img src="{{na.image_url}}" alt="Speaker 1" class="" style = "width: 40vw;
+              height: 20vw;">
+              <div class="details">
+                <h3><a href="/events/{{na.id}}"> Event name:   {{na.eventname}}   </a></h3>
+                
+                <h4 style="color: red">{{na.title}}</h4>
+                <div class="social">
+                  <a href="">Start:{{na.time_start}}</i></a>
+                  <a href="">To : {{na.time_end}}</i></a>
+                  <a href="">Rating : {{na.rating}}</i></a>
+                </div>
+              </div>
+            </div>
+          </div>
+          {%endfor%}
+          
+          {%endblock renderating%}
+
+        </div>
+      </div>
+
+    </section>
+    <section id="speakers" class="wow fadeInUp">
+      <div class="container">
+        <div class="section-header">
           <h2>Our Events</h2>
           <p>Here are popular events</p>
         </div>
@@ -163,10 +204,12 @@
               height: 20vw;">
               <div class="details">
                 <h3><a href="/events/{{na.id}}"> Event name:   {{na.eventname}}   </a></h3>
+                
                 <h4 style="color: red">{{na.title}}</h4>
                 <div class="social">
                   <a href="">Start:{{na.time_start}}</i></a>
                   <a href="">To : {{na.time_end}}</i></a>
+                  <a href="">Rating : {{na.rating}}</i></a>
                 </div>
               </div>
             </div>
@@ -179,7 +222,7 @@
       </div>
 
     </section>
-
+   
 
     <!--==========================
       Venue Section

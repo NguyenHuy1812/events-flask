@@ -10,11 +10,20 @@
     height: 40vw;">
     <div class="card-body">
             <div class="details">
+        
                     <h2>Event name : {{event.eventname}}</h2>
                     <h3>Event title : {{event.title}}</h3>
                     <h3>Time: {{event.time_start}} to {{event.time_end}} </h3>
                     <h3>Created_by : <a href="/users/{{event.owner.id}}">{{event.owner.username}}</a></h3>
                     <h3>Rating:{{rate_number}} </h3>
+                    <h3>Total ticket: {{event.stock}} tics</h3>
+                    {% with messages = get_flashed_messages() %}
+                        {%if messages %}
+                    <h3>
+                        {{ messages[0] }}
+                    </h3>
+                        {%endif%}
+                    {%endwith%}
                     <h3>Number sold_ticket: {{count_ticket.myCount}}</h3>
                     {%if current_user.id == event.owner.id %}
                     <h3>Total sold: {{count_money.myMoney}}$ </h3>

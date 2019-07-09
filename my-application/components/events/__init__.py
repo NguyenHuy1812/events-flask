@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template,redirect,url_for,request
+from flask import Blueprint, render_template,redirect,url_for,request, flash
 from components.events.forms.forms import CreateEvent,EditEvent , RatingFormEvent
 from models.ticketbox import User , db, Event , Ticket , Ticket_Type , RatingEvent
 from components.users import current_user
@@ -17,7 +17,7 @@ def create(current_user_id):
     form = CreateEvent()
     cur_user = User.query.filter_by(id = current_user_id).first()
     if form.validate_on_submit():
-        new_event = Event(image_url = form.image_url.data, title = form.title.data, eventname = form.eventname.data, time_start = form.time_start.data,time_end = form.time_end.data, body = form.body.data,owner = cur_user)
+        new_event = Event(stock = form.stock.data , image_url = form.image_url.data, title = form.title.data, eventname = form.eventname.data, time_start = form.time_start.data,time_end = form.time_end.data, body = form.body.data,owner = cur_user)
         db.session.add(new_event)
         db.session.commit()
         return redirect(url_for('something'))
@@ -27,7 +27,7 @@ def create(current_user_id):
 def delete(current_event_id):
     if request.method == 'POST':
         delete_event = Event.query.filter_by(id = current_event_id).first()
-        db.session.delete(delete_event)
+        delete_event.hide = 'yes'
         db.session.commit()
         return redirect(url_for("something"))
     return render_template('delete.html')
@@ -52,6 +52,7 @@ def edit(current_user_id,current_event_id):
         update_event.time_end = form.time_end.data
         update_event.body = form.body.data
         update_event.owner = cur_user
+        update_event.genre = form.genre.data
         db.session.commit()
         return redirect(url_for('something')) 
 
@@ -60,9 +61,9 @@ def edit(current_user_id,current_event_id):
 
 @events_blueprint.route('/<current_event_id>', methods = ['POST', 'GET'])
 def show_event(current_event_id):
+    
     form = RatingFormEvent()
     cur_event = Event.query.filter_by(id = current_event_id ).first()
-
     rate_list1 = RatingEvent.query.filter_by(rate_event = current_event_id)
     cur_rate_event = RatingEvent.query.filter_by(rate_event = current_event_id , rater_id = current_user.id).first()
     validate_rate =  RatingEvent.query.filter_by(rate_event = current_event_id).first()
@@ -75,6 +76,7 @@ def show_event(current_event_id):
     count_money = Ticket.query.with_entities(
              func.sum(Ticket.totalbill).label("myMoney")
          ).filter_by(event_id = current_event_id).first()
+   
     if validate_rate is None:
         rate_number = 0
     elif int(current_event_id) == int(validate_rate.rate_event):
@@ -83,6 +85,8 @@ def show_event(current_event_id):
     #     rate_number = float(result.mySum)
     else:
         rate_number = 0
+    cur_event.rating = rate_number
+    db.session.commit()
     if form.validate_on_submit():
         if  cur_rate_event is not None:
             cur_rate_event.rating = form.rating.data
@@ -100,7 +104,9 @@ def show_event(current_event_id):
 def buy_ticket(current_event_id):
     if request.method == 'POST':
         tic_type = Ticket_Type.query.filter_by(name = request.form['ticket-type']).first()
-        cur_ticket = Ticket(event_id = current_event_id , 
+        cur_event = Event.query.filter_by(id = current_event_id).first()
+        if int(request.form['quantity']) <= int(cur_event.stock):    
+            cur_ticket = Ticket(event_id = current_event_id , 
                             type_ticket = tic_type.id,
                             buyer_id = current_user.id, 
                             quantity = request.form['quantity'], 
@@ -108,8 +114,11 @@ def buy_ticket(current_event_id):
                             ticket_qrcode = qrcode(str(current_event_id)+str(tic_type.id) + str(random.randint(1,101)) + str(current_user.id)+str(request.form['quantity'])+str(int(tic_type.price) * int(request.form['quantity']))),
                             check_in_time = request.form['quantity']
                             )
-
-        db.session.add(cur_ticket)
-        db.session.commit()
+            db.session.add(cur_ticket)
+            cur_event.stock = (int(cur_event.stock) - int(request.form['quantity']))
+            db.session.commit()
+        else:
+            flash('out of stock!!!!!')
+            return redirect(url_for('events.show_event',current_event_id = current_event_id ))
         return redirect(url_for('users.ticketinfor',user_id = current_user.id , ticket_id = cur_ticket.id))
 

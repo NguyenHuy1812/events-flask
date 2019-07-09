@@ -5,13 +5,7 @@
 <form method = 'POST'>
         
 {{ form.hidden_tag() }}
-{% for field in form.errors %}
-    {% for error in form.errors[field] %}
-    <div class ="alert alert-error" style= "color: red">
-        <strong  style= "color: red">Error!</strong>{{error}}
-    </div>
-    {% endfor %}
-{% endfor %}
+
 {{ wtf.quick_form(form) }}
 </form>    
 
